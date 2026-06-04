@@ -48,6 +48,16 @@
                 </li>
 
                 <li class="nav-item">
+                    <a href="<?= BASEURL; ?>/booking/kalender"
+                    class="nav-link">
+
+                        <i class="nav-icon fas fa-calendar-alt"></i>
+                        <p>Kalender Booking</p>
+
+                    </a>
+                </li>
+
+                <li class="nav-item">
                     <a href="<?= BASEURL; ?>/pengaturan"
                        class="nav-link">
 
@@ -72,6 +82,26 @@
 
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="<?= BASEURL; ?>/booking/history"
+                    class="nav-link">
+
+                        <i class="nav-icon fas fa-history"></i>
+                        <p>History Booking</p>
+
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                <a href="<?= BASEURL; ?>/booking/fullcalendar"
+                class="nav-link">
+
+                    <i class="nav-icon fas fa-calendar-alt"></i>
+                    <p>Full Calendar</p>
+
+                </a>
+            </li>
 
                 <?php endif; ?>
 

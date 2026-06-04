@@ -10,40 +10,19 @@ class PembayaranModel
     }
 
     public function tambahPembayaran($data)
-    {
-        $query = "
+{
+    $this->db->query("
         INSERT INTO pembayaran
-        (
-            id_booking,
-            bukti_pembayaran,
-            tanggal_bayar,
-            status_verifikasi
-        )
+        (id_booking, bukti_pembayaran, status_verifikasi, tanggal_bayar)
         VALUES
-        (
-            :id_booking,
-            :bukti,
-            NOW(),
-            'menunggu'
-        )
-        ";
+        (:id_booking, :bukti, 'pending', NOW())
+    ");
 
-        $this->db->query($query);
+    $this->db->bind(':id_booking', $data['id_booking']);
+    $this->db->bind(':bukti', $data['bukti']);
 
-        $this->db->bind(
-            ':id_booking',
-            $data['id_booking']
-        );
-
-        $this->db->bind(
-            ':bukti',
-            $data['bukti']
-        );
-
-        $this->db->execute();
-
-        return $this->db->rowCount();
-    }
+    $this->db->execute();
+}
 
     public function getAllPembayaran()
     {   
@@ -107,5 +86,17 @@ class PembayaranModel
         );
 
         return $this->db->single();
+    }
+
+    public function totalIncome()
+    {
+        $this->db->query("
+            SELECT SUM(b.total_harga) as total
+            FROM pembayaran p
+            JOIN booking b ON p.id_booking = b.id_booking
+            WHERE p.status_verifikasi = 'disetujui'
+        ");
+
+        return $this->db->single()['total'];
     }
 }

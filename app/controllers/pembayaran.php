@@ -2,187 +2,132 @@
 
 class Pembayaran extends Controller
 {
+    // =====================
+    // CUSTOMER UPLOAD FORM
+    // =====================
     public function upload($idBooking)
     {
         AuthMiddleware::customer();
 
-        $data['title'] = 'Upload Pembayaran';
+        $bookingModel = $this->model('BookingModel');
 
+        $booking = $bookingModel->getBookingById($idBooking);
+
+        // 🔥 CEK EXPIRED
+        /*if ($booking['status'] == 'kadaluarsa' || strtotime($booking['batas_bayar_sampai']) < time()) {
+            die('Waktu pembayaran sudah habis');
+        }*/
+
+        $data['booking'] = $booking;
         $data['id_booking'] = $idBooking;
 
-        $this->view(
-            'pembayaran/upload',
-            $data
-        );
-
-       
+        $this->view('pembayaran/upload', $data);
     }
 
+    // =====================
+    // CUSTOMER STORE UPLOAD
+    // =====================
     public function store()
     {
         AuthMiddleware::customer();
 
-        $pembayaranModel =
-            $this->model(
-                'PembayaranModel'
-            );
+        $pembayaranModel = $this->model('PembayaranModel');
 
-        $file =
-            time()
-            .
-            '_'
-            .
-            $_FILES['bukti']['name'];
+        $file = time() . '_' . $_FILES['bukti']['name'];
 
         move_uploaded_file(
-
             $_FILES['bukti']['tmp_name'],
-
-            '../public/uploads/pembayaran/'
-            .
-            $file
+            '../public/uploads/pembayaran/' . $file
         );
 
         $data = [
-
-            'id_booking' =>
-                $_POST['id_booking'],
-
-            'bukti' =>
-                $file
-
+            'id_booking' => $_POST['id_booking'],
+            'bukti' => $file
         ];
 
-        $pembayaranModel
-            ->tambahPembayaran(
-                $data
-            );
+        $pembayaranModel->tambahPembayaran($data);
 
-         $bookingModel =
-        $this->model(
-            'BookingModel'
-        );
+        $bookingModel = $this->model('BookingModel');
 
         $bookingModel->updateStatus(
             $_POST['id_booking'],
             'menunggu_verifikasi'
         );
 
-        header(
-            'Location: '
-            .
-            BASEURL
-            .
-            '/booking/history'
-        );
-
+        header('Location: ' . BASEURL . '/booking/history');
     }
 
+    // =====================
+    // ADMIN LIST
+    // =====================
     public function index()
     {
         AuthMiddleware::admin();
 
-        $pembayaranModel =
-            $this->model(
-                'PembayaranModel'
-            );
+        $pembayaranModel = $this->model('PembayaranModel');
 
-        $data['title'] =
-            'Verifikasi Pembayaran';
+        $data['title'] = 'Verifikasi Pembayaran';
+        $data['pembayaran'] = $pembayaranModel->getAllPembayaran();
 
-        $data['pembayaran'] =
-            $pembayaranModel
-                ->getAllPembayaran();
+            /*debug
+            -var_dump($data['pembayaran']);
+                die;
+            -echo '<pre>';
+                print_r($data['pembayaran']);
+                echo '</pre>';
+                die;*/
 
-        $this->view(
-            'pembayaran/index',
-            $data
-        );
+        $this->view('pembayaran/index', $data);
     }
 
-    public function verifikasi(
-        $idPembayaran
-    )
+    // =====================
+    // ADMIN VERIFIKASI
+    // =====================
+    public function verifikasi($idPembayaran)
     {
         AuthMiddleware::admin();
 
-        $pembayaranModel =
-            $this->model(
-                'PembayaranModel'
-            );
+        $pembayaranModel = $this->model('PembayaranModel');
+        $bookingModel = $this->model('BookingModel');
 
-        $bookingModel =
-            $this->model(
-                'BookingModel'
-            );
+        $pembayaran = $pembayaranModel->getPembayaranById($idPembayaran);
 
-        $pembayaran =
-            $pembayaranModel
-                ->getPembayaranById(
-                    $idPembayaran
-                );
-
-        $pembayaranModel
-            ->updateStatusVerifikasi(
-                $idPembayaran,
-                'diterima'
-            );
-
-        $bookingModel
-            ->updateStatus(
-                $pembayaran['id_booking'],
-                'dikonfirmasi'
-            );
-
-        header(
-            'Location: '
-            .
-            BASEURL
-            .
-            '/pembayaran'
+        $pembayaranModel->updateStatusVerifikasi(
+            $idPembayaran,
+            'disetujui'
         );
+
+        $bookingModel->updateStatus(
+            $pembayaran['id_booking'],
+            'dikonfirmasi'
+        );
+
+        header('Location: ' . BASEURL . '/pembayaran');
     }
 
-    public function tolak(
-        $idPembayaran
-    )
+    // =====================
+    // ADMIN TOLAK
+    // =====================
+    public function tolak($idPembayaran)
     {
         AuthMiddleware::admin();
 
-        $pembayaranModel =
-            $this->model(
-                'PembayaranModel'
-            );
+        $pembayaranModel = $this->model('PembayaranModel');
+        $bookingModel = $this->model('BookingModel');
 
-        $bookingModel =
-            $this->model(
-                'BookingModel'
-            );
+        $pembayaran = $pembayaranModel->getPembayaranById($idPembayaran);
 
-        $pembayaran =
-            $pembayaranModel
-                ->getPembayaranById(
-                    $idPembayaran
-                );
-
-        $pembayaranModel
-            ->updateStatusVerifikasi(
-                $idPembayaran,
-                'ditolak'
-            );
-
-        $bookingModel
-            ->updateStatus(
-                $pembayaran['id_booking'],
-                'menunggu_pembayaran'
-            );
-
-        header(
-            'Location: '
-            .
-            BASEURL
-            .
-            '/pembayaran'
+        $pembayaranModel->updateStatusVerifikasi(
+            $idPembayaran,
+            'ditolak'
         );
+
+        $bookingModel->updateStatus(
+            $pembayaran['id_booking'],
+            'menunggu_pembayaran'
+        );
+
+        header('Location: ' . BASEURL . '/pembayaran');
     }
+
 }

@@ -5,13 +5,9 @@
 <div class="content-wrapper">
 
 <section class="content-header">
-
-<div class="container-fluid">
-
-<h1>Riwayat Booking</h1>
-
-</div>
-
+    <div class="container-fluid">
+        <h1>Riwayat Booking</h1>
+    </div>
 </section>
 
 <section class="content">
@@ -23,71 +19,107 @@
 <thead>
 
 <tr>
-
-<th>Studio</th>
-<th>Tanggal</th>
-<th>Jam</th>
-<th>Total</th>
-<th>Status</th>
-<th>Aksi</th>
-
+    <th>Studio</th>
+    <th>Tanggal</th>
+    <th>Jam</th>
+    <th>Total</th>
+    <th>Status</th>
+    <th>Aksi</th>
 </tr>
 
 </thead>
 
 <tbody>
 
-<?php foreach($data['booking'] as $booking): ?>
+<?php if(!empty($data['booking'])): ?>
 
-<tr>
+    <?php foreach($data['booking'] as $booking): ?>
 
-<td>
-<?= $booking['nama_studio']; ?>
-</td>
+        <tr>
 
-<td>
-<?= $booking['tanggal_penggunaan']; ?>
-</td>
+            <!-- Studio -->
+            <td><?= $booking['nama_studio']; ?></td>
 
-<td>
-<?= $booking['jam_mulai']; ?>
--
-<?= $booking['jam_selesai']; ?>
-</td>
+            <!-- Tanggal -->
+            <td><?= $booking['tanggal_penggunaan']; ?></td>
 
-<td>
-Rp <?= number_format(
-$booking['total_harga']
-); ?>
-</td>
+            <!-- Jam -->
+            <td>
+                <?= $booking['jam_mulai']; ?> - <?= $booking['jam_selesai']; ?>
+            </td>
 
-<td>
-<?= $booking['status']; ?>
-</td>
+            <!-- Total -->
+            <td>
+                Rp <?= number_format($booking['total_harga']); ?>
+            </td>
 
-<td>
+            <!-- STATUS -->
+            <td>
 
-<?php if(
-    $booking['status']
-    ==
-    'menunggu_pembayaran'
-): ?>
+                <?php if($booking['status'] == 'menunggu_pembayaran'): ?>
 
-<a
-href="<?= BASEURL; ?>/pembayaran/upload/<?= $booking['id_booking']; ?>"
-class="btn btn-primary btn-sm">
+                    <span class="badge badge-warning">Menunggu Pembayaran</span>
 
-Upload Bukti
+                <?php elseif($booking['status'] == 'menunggu_verifikasi'): ?>
 
-</a>
+                    <span class="badge badge-info">Menunggu Verifikasi</span>
+
+                <?php elseif($booking['status'] == 'dikonfirmasi'): ?>
+
+                    <span class="badge badge-success">Dikonfirmasi</span>
+
+                <?php elseif($booking['status'] == 'dibatalkan'): ?>
+
+                    <span class="badge badge-danger">Dibatalkan</span>
+
+                <?php elseif($booking['status'] == 'kadaluarsa'): ?>
+
+                    <span class="badge badge-secondary">Kadaluarsa</span>
+
+                <?php endif; ?>
+
+            </td>
+
+            <!-- AKSI -->
+            <td>
+
+                <?php if($booking['status'] == 'menunggu_pembayaran'): ?>
+
+                    <a href="<?= BASEURL; ?>/booking/detail/<?= $booking['id_booking']; ?>"
+                       class="btn btn-info btn-sm">
+
+                        Detail
+
+                    </a>
+
+                    <a href="<?= BASEURL; ?>/pembayaran/upload/<?= $booking['id_booking']; ?>"
+                       class="btn btn-primary btn-sm">
+
+                        Upload Bukti
+
+                    </a>
+
+                <?php else: ?>
+
+                    <span class="text-muted">-</span>
+
+                <?php endif; ?>
+
+            </td>
+
+        </tr>
+
+    <?php endforeach; ?>
+
+<?php else: ?>
+
+    <tr>
+        <td colspan="6" class="text-center">
+            Belum ada booking
+        </td>
+    </tr>
 
 <?php endif; ?>
-
-</td>
-
-</tr>
-
-<?php endforeach; ?>
 
 </tbody>
 
@@ -99,4 +131,4 @@ Upload Bukti
 
 </div>
 
-<?php require '../app/views/layouts/footer.php'; ?> 
+<?php require '../app/views/layouts/footer.php'; ?>

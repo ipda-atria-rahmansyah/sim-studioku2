@@ -23,14 +23,12 @@
 <thead>
 
 <tr>
-
-<th>ID Booking</th>
-<th>Customer</th>
-<th>Total</th>
-<th>Bukti</th>
-<th>Status</th>
-<th>Aksi</th>
-
+    <th>ID Booking</th>
+    <th>Customer</th>
+    <th>Total</th>
+    <th>Bukti</th>
+    <th>Status</th>
+    <th>Aksi</th>
 </tr>
 
 </thead>
@@ -41,60 +39,79 @@
 
 <tr>
 
-<td><?= $p['id_booking']; ?></td>
+    <!-- ID Booking -->
+    <td><?= $p['id_booking']; ?></td>
 
-<td><?= $p['nama']; ?></td>
+    <!-- Nama Customer -->
+    <td><?= $p['nama']; ?></td>
 
-<td>
-Rp <?= number_format(
-$p['total_harga']
-); ?>
-</td>
+    <!-- Total Harga -->
+    <td>
+        Rp <?= number_format($p['total_harga']); ?>
+    </td>
 
-<td>
+    <!-- Bukti Transfer -->
+    <td>
 
-<a target="_blank"
-href="<?= BASEURL; ?>/uploads/pembayaran/<?= $p['bukti_pembayaran']; ?>">
+        <a target="_blank"
+           href="<?= BASEURL; ?>/uploads/pembayaran/<?= $p['bukti_pembayaran']; ?>">
 
-Lihat Bukti
+            Lihat Bukti
 
-</a>
+        </a>
 
-</td>
+    </td>
 
-<td>
+    <!-- STATUS -->
+    <td>
 
-<?= $p['status_verifikasi']; ?>
+        <?php if($p['status_verifikasi'] == 'pending'): ?>
 
-</td>
+            <span class="badge badge-warning">Pending</span>
 
-<td>
+        <?php elseif($p['status_verifikasi'] == 'disetujui'): ?>
 
-<?php if(
-$p['status_verifikasi']
-==
-'menunggu'
-): ?>
+            <span class="badge badge-success">Disetujui</span>
 
-<a
-href="<?= BASEURL; ?>/pembayaran/verifikasi/<?= $p['id_pembayaran']; ?>"
-class="btn btn-success btn-sm">
+        <?php elseif($p['status_verifikasi'] == 'ditolak'): ?>
 
-Verifikasi
+            <span class="badge badge-danger">Ditolak</span>
 
-</a>
+        <?php else: ?>
 
-<a
-href="<?= BASEURL; ?>/pembayaran/tolak/<?= $p['id_pembayaran']; ?>"
-class="btn btn-danger btn-sm">
+            <span class="badge badge-secondary">-</span>
 
-Tolak
+        <?php endif; ?>
 
-</a>
+    </td>
 
-<?php endif; ?>
+    <!-- AKSI -->
+    <td>
 
-</td>
+        <?php if($p['status_verifikasi'] == 'pending'): ?>
+
+            <a href="<?= BASEURL; ?>/pembayaran/verifikasi/<?= $p['id_pembayaran']; ?>"
+               class="btn btn-success btn-sm">
+
+                Verifikasi
+
+            </a>
+
+            <a href="<?= BASEURL; ?>/pembayaran/tolak/<?= $p['id_pembayaran']; ?>"
+               class="btn btn-danger btn-sm">
+
+                Tolak
+
+            </a>
+
+        <?php else: ?>
+
+            <small class="text-muted">Tidak ada aksi</small>
+
+        <?php endif; ?>
+
+    </td>
+    
 
 </tr>
 
