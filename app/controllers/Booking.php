@@ -179,15 +179,21 @@ class Booking extends Controller
 
     public function getEvents()
     {
+        AuthMiddleware::check();
+
         $bookingModel = $this->model('BookingModel');
 
-        $data = $bookingModel->getAllBookingWithStudio();
+        // 🔥 CEK ROLE USER
+        if ($_SESSION['role'] == 'admin') {
+            $data = $bookingModel->getAllBookingWithStudio();
+        } else {
+            $data = $bookingModel->getBookingByUser($_SESSION['id_user']);
+        }
 
         $events = [];
 
         foreach ($data as $b) {
 
-            // WARNA STATUS
             $color = '#6c757d';
 
             if ($b['status'] == 'dikonfirmasi') {
@@ -198,19 +204,19 @@ class Booking extends Controller
                 $color = '#17a2b8';
             } elseif ($b['status'] == 'dibatalkan') {
                 $color = '#dc3545';
+            } elseif ($b['status'] == 'kadaluarsa') {
+                $color = '#343a40';
             }
 
             $events[] = [
-                'title' => $b['nama_studio'],
+                'title' => $b['nama_studio'] . ' - ' . ($b['nama'] ?? ''),
                 'start' => $b['tanggal_penggunaan'] . 'T' . $b['jam_mulai'],
                 'end'   => $b['tanggal_penggunaan'] . 'T' . $b['jam_selesai'],
-                'color' => $color,
-                'extendedProps' => [
-                    'status' => $b['status']
-                ]
+                'color' => $color
             ];
         }
 
+        header('Content-Type: application/json');
         echo json_encode($events);
     }
 

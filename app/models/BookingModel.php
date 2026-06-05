@@ -51,27 +51,18 @@ class BookingModel
         return $this->db->execute();
     }
 
-    public function cekBentrok(
-        $idStudio,
-        $tanggal,
-        $jamMulai,
-        $jamSelesai
-    )
+    public function cekBentrok($idStudio, $tanggal, $jamMulai, $jamSelesai)
     {
-        $query = "
-        SELECT *
-        FROM booking
-        WHERE id_studio = :id_studio
-        AND tanggal_penggunaan = :tanggal
-        AND status != 'ditolak'
-        AND (
-            jam_mulai < :jam_selesai
-            AND
-            jam_selesai > :jam_mulai
-        )
-        ";
-
-        $this->db->query($query);
+        $this->db->query("
+            SELECT * FROM booking
+            WHERE id_studio = :id_studio
+            AND tanggal_penggunaan = :tanggal
+            AND status != 'kadaluarsa'
+            AND status != 'dibatalkan'
+            AND (
+                (jam_mulai < :jam_selesai AND jam_selesai > :jam_mulai)
+            )
+        ");
 
         $this->db->bind(':id_studio', $idStudio);
         $this->db->bind(':tanggal', $tanggal);
@@ -233,6 +224,16 @@ class BookingModel
         $this->db->bind(':batas_bayar_sampai', $data['batas_bayar_sampai']);
 
         return $this->db->execute();
+    }
+
+    public function generateInvoiceNumber()
+    {
+        $this->db->query("SELECT COUNT(*) as total FROM booking");
+        $data = $this->db->single();
+
+        $next = $data['total'] + 1;
+
+        return 'INV-' . date('Y') . '-' . str_pad($next, 4, '0', STR_PAD_LEFT);
     }
     
 

@@ -55,7 +55,17 @@
                         <p>Kalender Booking</p>
 
                     </a>
-                </li>
+                </li> 
+
+                <li class="nav-item">
+                <a href="<?= BASEURL; ?>/booking/fullcalendar"
+                class="nav-link">
+
+                    <i class="nav-icon fas fa-calendar-alt"></i>
+                    <p>Full Calendar</p>
+
+                </a>
+            </li>
 
                 <li class="nav-item">
                     <a href="<?= BASEURL; ?>/pengaturan"

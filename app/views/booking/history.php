@@ -80,28 +80,35 @@
 
             </td>
 
-            <!-- AKSI -->
             <td>
 
-                <?php if($booking['status'] == 'menunggu_pembayaran'): ?>
+                <!-- DETAIL SELALU ADA -->
+                <a href="<?= BASEURL; ?>/booking/detail/<?= $booking['id_booking']; ?>"
+                class="btn btn-info btn-sm">
+                    Detail
+                </a>
 
-                    <a href="<?= BASEURL; ?>/booking/detail/<?= $booking['id_booking']; ?>"
-                       class="btn btn-info btn-sm">
-
-                        Detail
-
-                    </a>
+                <!-- UPLOAD BUKTI (HANYA MENUNGGU PEMBAYARAN) -->
+                <?php if ($booking['status'] == 'menunggu_pembayaran'): ?>
 
                     <a href="<?= BASEURL; ?>/pembayaran/upload/<?= $booking['id_booking']; ?>"
-                       class="btn btn-primary btn-sm">
-
+                    class="btn btn-primary btn-sm">
                         Upload Bukti
-
                     </a>
 
-                <?php else: ?>
+                <?php endif; ?>
 
-                    <span class="text-muted">-</span>
+                <!-- DOWNLOAD INVOICE (SETELAH BAYAR / VERIFIKASI) -->
+                <?php if (
+                    $booking['status'] == 'menunggu_verifikasi' ||
+                    $booking['status'] == 'dikonfirmasi' ||
+                    $booking['status'] == 'selesai'
+                ): ?>
+
+                    <a href="<?= BASEURL; ?>/invoice/generate/<?= $booking['id_booking']; ?>"
+                    class="btn btn-success btn-sm">
+                        Download Invoice
+                    </a>
 
                 <?php endif; ?>
 
