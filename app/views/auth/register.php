@@ -112,5 +112,40 @@
 <script src="<?= BASEURL; ?>/assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASEURL; ?>/assets/adminlte/dist/js/adminlte.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if(isset($_SESSION['error'])) : ?>
+
+<script>
+
+Swal.fire({
+    icon: 'error',
+    title: 'Registrasi Gagal',
+    text: '<?= $_SESSION['error']; ?>',
+    confirmButtonText: 'OK'
+});
+
+</script>
+
+<?php unset($_SESSION['error']); ?>
+
+<?php endif; ?>
+
+<?php if(isset($_SESSION['success'])) : ?>
+
+<script>
+
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '<?= $_SESSION['success']; ?>',
+    confirmButtonText: 'OK'
+});
+
+</script>
+
+<?php unset($_SESSION['success']); ?>
+
+<?php endif; ?>
 </body>
 </html>

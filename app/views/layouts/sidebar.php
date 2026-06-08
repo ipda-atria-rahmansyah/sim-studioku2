@@ -68,14 +68,17 @@
             </li>
 
                 <li class="nav-item">
+
                     <a href="<?= BASEURL; ?>/pengaturan"
-                       class="nav-link">
+                    class="nav-link">
 
-                        <i class="nav-icon fas fa-cog"></i>
+                    <i class="nav-icon fas fa-cog"></i>
 
-                        <p>Pengaturan</p>
+                    <p>Pengaturan</p>
+
                     </a>
-                </li>
+
+                    </li>
 
                 <?php endif; ?>
 

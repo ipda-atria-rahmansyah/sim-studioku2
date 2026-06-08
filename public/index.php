@@ -1,5 +1,8 @@
 <?php
 
+session_start();
+date_default_timezone_set('Asia/Jakarta');
+
 require_once '../app/config/config.php';
 
 require_once '../app/core/App.php';

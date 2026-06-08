@@ -21,6 +21,7 @@ class BookingModel
                 durasi_menit,
                 total_harga,
                 status,
+                batas_pembayaran,
                 batas_bayar_sampai
             )
             VALUES (
@@ -32,6 +33,7 @@ class BookingModel
                 :durasi_menit,
                 :total_harga,
                 :status,
+                :batas_pembayaran,
                 :batas_bayar_sampai
             )
         ");
@@ -46,6 +48,7 @@ class BookingModel
         $this->db->bind(':status', $data['status']);
 
         // 🔥 INI YANG KAMU LUPA / ERROR
+        $this->db->bind(':batas_pembayaran', $data['batas_pembayaran']);
         $this->db->bind(':batas_bayar_sampai', $data['batas_bayar_sampai']);
 
         return $this->db->execute();

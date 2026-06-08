@@ -63,5 +63,24 @@
 </section>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php if(isset($_SESSION['success'])) : ?>
+
+<script>
+
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '<?= $_SESSION['success']; ?>',
+    timer: 2000,
+    showConfirmButton: false
+});
+
+</script>
+
+<?php unset($_SESSION['success']); ?>
+
+<?php endif; ?>
 
 <?php require '../app/views/layouts/footer.php'; ?>

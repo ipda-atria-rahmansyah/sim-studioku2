@@ -6,39 +6,24 @@ class Booking extends Controller
     {
         AuthMiddleware::customer();
 
-        $studioModel = $this->model(
-            'StudioModel'
-        );
+        $studioModel = $this->model('StudioModel');
 
         $data['title'] = 'Booking Studio';
+        $data['studio'] = $studioModel->getStudioAktif();
 
-        $data['studio'] =
-            $studioModel->getStudioAktif();
-
-        $this->view(
-            'booking/index',
-            $data
-        );
+        $this->view('booking/index', $data);
     }
 
     public function create($id)
     {
         AuthMiddleware::customer();
 
-        $studioModel = $this->model(
-            'StudioModel'
-        );
+        $studioModel = $this->model('StudioModel');
 
-        $data['studio'] =
-            $studioModel->getStudioById($id);
+        $data['title'] = 'Form Booking';
+        $data['studio'] = $studioModel->getStudioById($id);
 
-        $data['title'] =
-            'Form Booking';
-
-        $this->view(
-            'booking/create',
-            $data
-        );
+        $this->view('booking/create', $data);
     }
 
     public function store()
@@ -50,9 +35,8 @@ class Booking extends Controller
         $pengaturanModel = $this->model('PengaturanModel');
 
         // =========================
-        // VALIDASI DASAR (WAJIB DI ATAS)
+        // VALIDASI
         // =========================
-
         if ($_POST['jam_selesai'] <= $_POST['jam_mulai']) {
             die('Jam selesai harus lebih besar dari jam mulai');
         }
@@ -64,7 +48,6 @@ class Booking extends Controller
         // =========================
         // CEK BENTROK
         // =========================
-
         $bentrok = $bookingModel->cekBentrok(
             $_POST['id_studio'],
             $_POST['tanggal_penggunaan'],
@@ -77,9 +60,8 @@ class Booking extends Controller
         }
 
         // =========================
-        // HITUNG DURASI & TOTAL
+        // HITUNG DURASI
         // =========================
-
         $studio = $studioModel->getStudioById($_POST['id_studio']);
 
         $mulai = strtotime($_POST['jam_mulai']);
@@ -94,21 +76,20 @@ class Booking extends Controller
         $totalHarga = ($durasiMenit / 10) * $studio['harga_per_10_menit'];
 
         // =========================
-        // AMBIL SETTING BATAS BAYAR
+        // AMBIL SETTING
         // =========================
-
-        $setting = $pengaturanModel->getSetting();
+        $setting = $pengaturanModel->getpengaturan(); // FIXED (bukan getpengaturan)
         $batasMenit = $setting['batas_pembayaran_default'];
 
-        $batasBayar = date(
-            'Y-m-d H:i:s',
-            strtotime("+$batasMenit minutes")
-        );
+        $now = new DateTime();
+
+        $now->add(new DateInterval('PT' . $batasMenit . 'M'));
+
+        $batasBayar = $now->format('Y-m-d H:i:s');
 
         // =========================
-        // DATA BOOKING
+        // DATA INSERT
         // =========================
-
         $data = [
             'id_user' => $_SESSION['id_user'],
             'id_studio' => $_POST['id_studio'],
@@ -118,15 +99,16 @@ class Booking extends Controller
             'durasi_menit' => $durasiMenit,
             'total_harga' => $totalHarga,
 
-            // 🔥 STATUS & DEADLINE
             'status' => 'menunggu_pembayaran',
-            'batas_bayar_sampai' => $batasBayar
+
+            // penting: simpan deadline
+            'batas_bayar_sampai' => $batasBayar,
+            'batas_pembayaran' => $batasMenit
         ];
 
         // =========================
-        // INSERT
+        // INSERT DATABASE
         // =========================
-
         $bookingModel->tambahBooking($data);
 
         header('Location: ' . BASEURL . '/booking/history');
@@ -137,21 +119,15 @@ class Booking extends Controller
     {
         AuthMiddleware::customer();
 
-        $bookingModel =
-            $this->model('BookingModel');
+        $bookingModel = $this->model('BookingModel');
 
-        $data['title'] =
-            'Riwayat Booking';
+        $data['title'] = 'Riwayat Booking';
 
-        $data['booking'] =
-            $bookingModel->getBookingByUser(
-                $_SESSION['id_user']
-            );
-
-        $this->view(
-            'booking/history',
-            $data
+        $data['booking'] = $bookingModel->getBookingByUser(
+            $_SESSION['id_user']
         );
+
+        $this->view('booking/history', $data);
     }
 
     public function detail($id)
@@ -159,7 +135,6 @@ class Booking extends Controller
         $bookingModel = $this->model('BookingModel');
 
         $data['title'] = 'Detail Booking';
-
         $data['booking'] = $bookingModel->getBookingById($id);
 
         $this->view('booking/detail', $data);
@@ -183,7 +158,7 @@ class Booking extends Controller
 
         $bookingModel = $this->model('BookingModel');
 
-        // 🔥 CEK ROLE USER
+        // admin lihat semua, user hanya milik sendiri
         if ($_SESSION['role'] == 'admin') {
             $data = $bookingModel->getAllBookingWithStudio();
         } else {
@@ -224,12 +199,8 @@ class Booking extends Controller
     {
         AuthMiddleware::check();
 
-        $bookingModel = $this->model('BookingModel');
-
         $data['title'] = 'Full Calendar Booking';
 
         $this->view('booking/fullcalendar', $data);
     }
-
-
 }
